@@ -73,7 +73,7 @@ export const projects: Project[] = [
     title: "Add your next project here",
     description:
       "A short line on the problem it solved, your role, and the outcome. Keep it concrete — what shipped, and what it's made of.",
-    tags: ["stack tag", "stack tag"],
+    tags: ["stack tag one", "stack tag two"],
   },
 ];
 

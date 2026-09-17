@@ -52,8 +52,49 @@
   --font-serif: var(--font-serif);
 }
 
-:root,
+:root {
+  color-scheme: light;
+  --background: #f7f5f0;
+  --foreground: #1a1b23;
+  --card: #ffffff;
+  --card-foreground: #1a1b23;
+  --popover: #ffffff;
+  --popover-foreground: #1a1b23;
+  --primary: #3d66c9;
+  --primary-foreground: #ffffff;
+  --secondary: #efede6;
+  --secondary-foreground: #1a1b23;
+  --muted: #efede6;
+  --muted-foreground: #64697a;
+  --accent: #efede6;
+  --accent-foreground: #1a1b23;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e3e0d6;
+  --input: #e3e0d6;
+  --ring: #3d66c9;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1b23;
+  --sidebar-primary: #3d66c9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #efede6;
+  --sidebar-accent-foreground: #1a1b23;
+  --sidebar-border: #e3e0d6;
+  --sidebar-ring: #3d66c9;
+
+  /* portfolio-specific tokens (not part of the shadcn semantic set) */
+  --surface-2: #efede6;
+  --amber: #a86a0a;
+  --font-serif: "Fraunces", serif;
+}
+
 .dark {
+  color-scheme: dark;
   --background: #12141c;
   --foreground: #e9e7e0;
   --card: #191c26;
@@ -77,7 +118,6 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
   --sidebar: #191c26;
   --sidebar-foreground: #e9e7e0;
   --sidebar-primary: #5b8def;
