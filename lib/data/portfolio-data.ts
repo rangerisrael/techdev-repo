@@ -9,7 +9,7 @@ import type {
 } from "@/lib/types/portfolio";
 
 export const siteConfig: SiteConfig = {
-  brand: "israel",
+  brand: "techdev",
   kicker: "// full-stack developer, based in the Philippines",
   headline: "Israel builds the systems behind the interface.",
   subheadline:
