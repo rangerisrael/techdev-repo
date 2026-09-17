@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { FadeIn } from "@/components/portfolio/fade-in";
 import { StatusPanel } from "@/components/portfolio/status-panel";
 import type { SiteConfig, StatusItem } from "@/lib/types/portfolio";
@@ -20,19 +20,25 @@ export function HeroSection({ config, statusItems }: HeroSectionProps) {
           {config.subheadline}
         </p>
         <div className="flex flex-wrap gap-3.5">
-          <Button
-            render={<a href={config.primaryCta.href} />}
-            className="h-auto rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/85"
+          <a
+            href={config.primaryCta.href}
+            className={buttonVariants({
+              className:
+                "h-auto rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/85",
+            })}
           >
             {config.primaryCta.label}
-          </Button>
-          <Button
-            render={<a href={config.secondaryCta.href} />}
-            variant="outline"
-            className="h-auto rounded-md border-line bg-transparent px-5 py-3 text-sm font-medium text-foreground hover:border-primary hover:text-primary"
+          </a>
+          <a
+            href={config.secondaryCta.href}
+            className={buttonVariants({
+              variant: "outline",
+              className:
+                "h-auto rounded-md border-line bg-transparent px-5 py-3 text-sm font-medium text-foreground hover:border-primary hover:text-primary",
+            })}
           >
             {config.secondaryCta.label}
-          </Button>
+          </a>
         </div>
       </FadeIn>
 
