@@ -16,7 +16,10 @@ export const contactMessageSchema = z.object({
   email: z
     .string()
     .trim()
-    .email({ error: "Enter a valid email address." }),
+    .email({ error: "Enter a valid email address." })
+    .refine((value) => value.toLowerCase().endsWith("@gmail.com"), {
+      error: "Only @gmail.com email addresses are accepted.",
+    }),
   message: z
     .string()
     .trim()

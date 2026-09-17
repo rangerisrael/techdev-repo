@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -102,7 +102,7 @@ export default async function SiteConfigPage() {
           name="contactNote"
           defaultValue={values.contactNote}
         />
-        <Button type="submit">Save</Button>
+        <SubmitButton pendingLabel="Saving…">Save</SubmitButton>
       </form>
     </div>
   );

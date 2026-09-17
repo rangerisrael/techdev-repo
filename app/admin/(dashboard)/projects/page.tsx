@@ -1,5 +1,5 @@
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,9 +84,9 @@ export default async function ProjectsPage() {
               />
             </div>
             <div className="flex gap-1.5">
-              <Button type="submit" size="sm">
+              <SubmitButton size="sm" pendingLabel="Saving…">
                 Save
-              </Button>
+              </SubmitButton>
               <ConfirmSubmitButton
                 type="submit"
                 formAction={deleteProject}
@@ -140,9 +140,9 @@ export default async function ProjectsPage() {
           <Label htmlFor="new-tags">Tags</Label>
           <Input id="new-tags" name="tags" placeholder="Node.js, PostgreSQL" />
         </div>
-        <Button type="submit" size="sm">
+        <SubmitButton size="sm" pendingLabel="Adding…">
           Add
-        </Button>
+        </SubmitButton>
       </form>
     </div>
   );

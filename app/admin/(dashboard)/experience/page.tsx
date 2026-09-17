@@ -1,5 +1,5 @@
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,9 +71,9 @@ export default async function ExperiencePage() {
               />
             </div>
             <div className="flex gap-1.5">
-              <Button type="submit" size="sm">
+              <SubmitButton size="sm" pendingLabel="Saving…">
                 Save
-              </Button>
+              </SubmitButton>
               <ConfirmSubmitButton
                 type="submit"
                 formAction={deleteExperience}
@@ -111,9 +111,9 @@ export default async function ExperiencePage() {
           <Label htmlFor="new-description">Description</Label>
           <Textarea id="new-description" name="description" required rows={3} />
         </div>
-        <Button type="submit" size="sm">
+        <SubmitButton size="sm" pendingLabel="Adding…">
           Add
-        </Button>
+        </SubmitButton>
       </form>
     </div>
   );

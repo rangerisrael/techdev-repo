@@ -1,5 +1,5 @@
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/admin/submit-button";
 import { getContactMessageRepository } from "@/lib/db/repositories";
 
 import { deleteMessage, markMessageRead } from "./actions";
@@ -56,9 +56,13 @@ export default async function MessagesPage() {
                     name="read"
                     value={(!row.read).toString()}
                   />
-                  <Button type="submit" variant="outline" size="sm">
+                  <SubmitButton
+                    variant="outline"
+                    size="sm"
+                    pendingLabel={row.read ? "Marking unread…" : "Marking read…"}
+                  >
                     {row.read ? "Mark unread" : "Mark read"}
-                  </Button>
+                  </SubmitButton>
                 </form>
                 <form action={deleteMessage}>
                   <input type="hidden" name="id" value={row.id} />

@@ -4,7 +4,7 @@ import { contactMessageSchema } from "../contact-message";
 
 const valid = {
   name: "Ada Lovelace",
-  email: "ada@example.com",
+  email: "ada@gmail.com",
   message: "I'd love to talk about a potential project.",
 };
 
@@ -12,12 +12,29 @@ describe("contactMessageSchema", () => {
   it("accepts a well-formed submission and trims whitespace", () => {
     const result = contactMessageSchema.safeParse({
       name: "  Ada Lovelace  ",
-      email: "  ada@example.com  ",
+      email: "  ada@gmail.com  ",
       message: "  I'd love to talk about a potential project.  ",
     });
 
     expect(result.success).toBe(true);
     expect(result.data).toEqual(valid);
+  });
+
+  it("accepts a Gmail address regardless of case", () => {
+    const result = contactMessageSchema.safeParse({
+      ...valid,
+      email: "Ada@GMAIL.com",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a well-formed email from a non-Gmail domain", () => {
+    const result = contactMessageSchema.safeParse({
+      ...valid,
+      email: "ada@example.com",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.email?.[0]).toBeTruthy();
   });
 
   it("rejects a name shorter than 2 characters", () => {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/admin/submit-button";
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getContactMessageRepository } from "@/lib/db/repositories";
 
@@ -61,9 +61,14 @@ export default async function AdminDashboardLayout({
           ))}
         </nav>
         <form action={logout} className="pt-4 sm:mt-auto">
-          <Button type="submit" variant="outline" size="sm" className="w-full">
+          <SubmitButton
+            variant="outline"
+            size="sm"
+            className="w-full"
+            pendingLabel="Logging out…"
+          >
             Log out
-          </Button>
+          </SubmitButton>
         </form>
       </aside>
       <main className="flex-1 overflow-x-auto p-6">{children}</main>
