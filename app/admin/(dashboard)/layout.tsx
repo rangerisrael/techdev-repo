@@ -7,6 +7,13 @@ import { getContactMessageRepository } from "@/lib/db/repositories";
 
 import { logout } from "../login/actions";
 
+// Every page here sits behind an admin-only auth check and reads live data
+// (unread message count, table contents) — it should never be attempted as
+// a static build-time page. Without this, `next build` tries to prerender
+// these routes anyway, and the auth/DB calls made during that attempt can
+// hang the build (see the "took more than 60 seconds" failures this fixes).
+export const dynamic = "force-dynamic";
+
 const sections = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/site-config", label: "Site config" },

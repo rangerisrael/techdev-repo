@@ -14,7 +14,13 @@ import * as schema from "./schema";
 export function createDbClient(connectionString = getDatabaseUrl()) {
   // Supabase's pooled connection (pgbouncer, transaction mode) does not
   // support prepared statements, so they're disabled unconditionally.
-  const client = postgres(connectionString, { prepare: false });
+  // `max: 5` bounds each process's own connection pool (each parallel
+  // `next build` static-generation worker gets its own) well below the
+  // postgres.js default of 10, without pinning it to a single connection —
+  // a page that fires off several queries concurrently via `Promise.all`
+  // needs more than one, or they end up serialized onto the same socket
+  // and can stall waiting on the transaction-mode pooler.
+  const client = postgres(connectionString, { prepare: false, max: 5 });
   return { client, db: drizzle(client, { schema }) };
 }
 

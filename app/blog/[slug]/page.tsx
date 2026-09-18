@@ -15,10 +15,11 @@ import { SiteNav } from "@/components/portfolio/site-nav";
 import { parseBodyBlock } from "@/lib/blog/content";
 import { getBlogEngagementRepository, getPortfolioRepository } from "@/lib/db/repositories";
 
-export async function generateStaticParams() {
-  const posts = await getPortfolioRepository().getBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
+// Not statically generated: every render here also records a view and
+// reads live comments, so a build-time-prerendered version would freeze
+// the view count forever and never show new comments. Rendering fresh per
+// request is the correct behavior for this page, not just a build fix.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(
   props: PageProps<"/blog/[slug]">
