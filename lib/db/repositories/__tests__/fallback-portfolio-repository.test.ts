@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 // imported under vitest, same as Next.js does for server bundles.
 vi.mock("server-only", () => ({}));
 
+import { blogPosts } from "@/lib/data/blog-data";
 import {
   contactLinks,
   contactNote,
@@ -19,6 +20,19 @@ import {
 
 import { FallbackPortfolioRepository } from "../fallback-portfolio-repository";
 import type { PortfolioRepository } from "../portfolio-repository";
+
+const dbBlogPost = {
+  id: 1,
+  slug: "from-db-post",
+  author: { name: "from-db" },
+  date: "Jan 1",
+  title: "from-db",
+  tags: [],
+  reactions: 0,
+  comments: 0,
+  views: 0,
+  readTime: "1 min read",
+};
 
 function workingRepository(): PortfolioRepository {
   return {
@@ -36,6 +50,8 @@ function workingRepository(): PortfolioRepository {
       { date: "x", role: "from-db", description: "x" },
     ],
     getContactLinks: async () => [{ label: "from-db", href: "#" }],
+    getBlogPosts: async () => [dbBlogPost],
+    getBlogPost: async (slug) => (slug === dbBlogPost.slug ? dbBlogPost : null),
   };
 }
 
@@ -52,6 +68,8 @@ function throwingRepository(): PortfolioRepository {
     getProjects: fail,
     getExperience: fail,
     getContactLinks: fail,
+    getBlogPosts: fail,
+    getBlogPost: fail,
   };
 }
 
@@ -61,6 +79,8 @@ describe("FallbackPortfolioRepository", () => {
 
     expect((await repo.getSiteConfig()).brand).toBe("from-db");
     expect(await repo.getContactNote()).toBe("from-db");
+    expect(await repo.getBlogPosts()).toEqual([dbBlogPost]);
+    expect(await repo.getBlogPost(dbBlogPost.slug)).toEqual(dbBlogPost);
   });
 
   it("falls back to static data when every query fails", async () => {
@@ -74,6 +94,20 @@ describe("FallbackPortfolioRepository", () => {
     expect(await repo.getProjects()).toEqual(projects);
     expect(await repo.getExperience()).toEqual(experience);
     expect(await repo.getContactLinks()).toEqual(contactLinks);
+    expect(await repo.getBlogPosts()).toEqual(blogPosts);
+    expect(await repo.getBlogPost(blogPosts[0].slug)).toEqual(blogPosts[0]);
+  });
+
+  it("falls back to a static post when the DB doesn't have that slug", async () => {
+    const repo = new FallbackPortfolioRepository(workingRepository);
+
+    expect(await repo.getBlogPost(blogPosts[0].slug)).toEqual(blogPosts[0]);
+  });
+
+  it("returns null when a slug exists in neither the DB nor static data", async () => {
+    const repo = new FallbackPortfolioRepository(workingRepository);
+
+    expect(await repo.getBlogPost("does-not-exist")).toBeNull();
   });
 
   it("falls back to static data when the primary repository can't be constructed", async () => {

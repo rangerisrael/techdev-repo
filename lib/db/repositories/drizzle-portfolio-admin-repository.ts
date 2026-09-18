@@ -1,9 +1,10 @@
 import "server-only";
 
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 
 import { type Database, getDb } from "../client";
 import {
+  blogPostsTable,
   contactLinksTable,
   experienceTable,
   navLinksTable,
@@ -13,6 +14,7 @@ import {
   statusItemsTable,
 } from "../schema";
 import type {
+  BlogPostInput,
   ContactLinkInput,
   ExperienceInput,
   NavLinkInput,
@@ -211,5 +213,40 @@ export class DrizzlePortfolioAdminRepository
     await this.db
       .delete(contactLinksTable)
       .where(eq(contactLinksTable.id, id));
+  }
+
+  async listBlogPosts() {
+    return this.db
+      .select()
+      .from(blogPostsTable)
+      .orderBy(desc(blogPostsTable.publishedAt));
+  }
+
+  async getBlogPost(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(blogPostsTable)
+      .where(eq(blogPostsTable.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async createBlogPost(input: BlogPostInput) {
+    const [row] = await this.db
+      .insert(blogPostsTable)
+      .values(input)
+      .returning();
+    return row;
+  }
+
+  async updateBlogPost(id: number, input: BlogPostInput): Promise<void> {
+    await this.db
+      .update(blogPostsTable)
+      .set(input)
+      .where(eq(blogPostsTable.id, id));
+  }
+
+  async deleteBlogPost(id: number): Promise<void> {
+    await this.db.delete(blogPostsTable).where(eq(blogPostsTable.id, id));
   }
 }

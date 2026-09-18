@@ -1,7 +1,9 @@
 import type {
+  BlogPostRow,
   ContactLinkRow,
   ExperienceRow,
   NavLinkRow,
+  NewBlogPostRow,
   NewContactLinkRow,
   NewExperienceRow,
   NewNavLinkRow,
@@ -25,6 +27,7 @@ export type StackLayerInput = Omit<NewStackLayerRow, "id">;
 export type ProjectInput = Omit<NewProjectRow, "id">;
 export type ExperienceInput = Omit<NewExperienceRow, "id">;
 export type ContactLinkInput = Omit<NewContactLinkRow, "id">;
+export type BlogPostInput = Omit<NewBlogPostRow, "id" | "createdAt" | "views">;
 
 /**
  * Write-side counterpart to `PortfolioRepository`. Kept as a separate
@@ -68,4 +71,10 @@ export interface PortfolioAdminRepository {
   createContactLink(input: ContactLinkInput): Promise<ContactLinkRow>;
   updateContactLink(id: number, input: ContactLinkInput): Promise<void>;
   deleteContactLink(id: number): Promise<void>;
+
+  listBlogPosts(): Promise<BlogPostRow[]>;
+  getBlogPost(id: number): Promise<BlogPostRow | null>;
+  createBlogPost(input: BlogPostInput): Promise<BlogPostRow>;
+  updateBlogPost(id: number, input: BlogPostInput): Promise<void>;
+  deleteBlogPost(id: number): Promise<void>;
 }

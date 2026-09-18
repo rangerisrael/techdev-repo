@@ -6,17 +6,23 @@ import { SiteNav } from "@/components/portfolio/site-nav";
 const links = [
   { label: "stack", href: "#stack" },
   { label: "work", href: "#work" },
+  { label: "blog", href: "/blog" },
 ];
 
+/** Hash-only hrefs resolve to the homepage section; other hrefs pass through unchanged. */
+function expectedHref(href: string): string {
+  return href.startsWith("#") ? `/${href}` : href;
+}
+
 describe("SiteNav", () => {
-  it("renders the brand and every nav link", () => {
+  it("renders the brand and every nav link, anchoring hash links to the homepage", () => {
     render(<SiteNav brand="israel" links={links} />);
 
     expect(screen.getByText("israel")).toBeInTheDocument();
     for (const link of links) {
       expect(screen.getByRole("link", { name: link.label })).toHaveAttribute(
         "href",
-        link.href
+        expectedHref(link.href)
       );
     }
   });
@@ -35,7 +41,7 @@ describe("SiteNav", () => {
     for (const link of links) {
       expect(
         within(dialog).getByRole("link", { name: link.label })
-      ).toHaveAttribute("href", link.href);
+      ).toHaveAttribute("href", expectedHref(link.href));
     }
   });
 

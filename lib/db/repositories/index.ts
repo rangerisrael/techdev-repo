@@ -1,6 +1,8 @@
 import "server-only";
 
+import type { BlogEngagementRepository } from "./blog-engagement-repository";
 import type { ContactMessageRepository } from "./contact-message-repository";
+import { DrizzleBlogEngagementRepository } from "./drizzle-blog-engagement-repository";
 import { DrizzleContactMessageRepository } from "./drizzle-contact-message-repository";
 import { DrizzlePortfolioAdminRepository } from "./drizzle-portfolio-admin-repository";
 import { FallbackPortfolioRepository } from "./fallback-portfolio-repository";
@@ -19,10 +21,13 @@ export type {
   ProjectInput,
   ExperienceInput,
   ContactLinkInput,
+  BlogPostInput,
 } from "./portfolio-admin-repository";
 export { DrizzlePortfolioAdminRepository } from "./drizzle-portfolio-admin-repository";
 export type { ContactMessageRepository } from "./contact-message-repository";
 export { DrizzleContactMessageRepository } from "./drizzle-contact-message-repository";
+export type { BlogCommentInput, BlogEngagementRepository } from "./blog-engagement-repository";
+export { DrizzleBlogEngagementRepository } from "./drizzle-blog-engagement-repository";
 
 /**
  * Composition root for the portfolio DAL. Pages/Server Components should
@@ -52,4 +57,14 @@ export function getPortfolioAdminRepository(): PortfolioAdminRepository {
  */
 export function getContactMessageRepository(): ContactMessageRepository {
   return new DrizzleContactMessageRepository();
+}
+
+/**
+ * Composition root for visitor blog engagement (comments, reactions,
+ * views) — written and read entirely from the public blog pages. No
+ * fallback: if the database is unreachable there's nothing meaningful to
+ * fall back to, so callers handle the failure themselves.
+ */
+export function getBlogEngagementRepository(): BlogEngagementRepository {
+  return new DrizzleBlogEngagementRepository();
 }

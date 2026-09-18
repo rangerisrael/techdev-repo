@@ -8,6 +8,17 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { NavLink } from "@/lib/types/portfolio";
 
+/**
+ * Hash-only links (e.g. "#stack") point at sections on the homepage.
+ * Rendered as-is, they resolve relative to whatever page you're currently
+ * on — clicking "Work" from /blog would try to scroll /blog to an anchor
+ * that doesn't exist there instead of jumping to the homepage section.
+ * Anchoring them to "/" makes them work from any page.
+ */
+function resolveNavHref(href: string): string {
+  return href.startsWith("#") ? `/${href}` : href;
+}
+
 export function SiteNav({ brand, links }: { brand: string; links: NavLink[] }) {
   const [open, setOpen] = useState(false);
 
@@ -26,7 +37,7 @@ export function SiteNav({ brand, links }: { brand: string; links: NavLink[] }) {
             {links.map((link) => (
               <li key={link.href}>
                 <a
-                  href={link.href}
+                  href={resolveNavHref(link.href)}
                   className="font-mono text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   {link.label}
@@ -84,7 +95,7 @@ export function SiteNav({ brand, links }: { brand: string; links: NavLink[] }) {
                       <Dialog.Close
                         render={
                           <a
-                            href={link.href}
+                            href={resolveNavHref(link.href)}
                             className="font-mono text-2xl text-foreground transition-colors hover:text-primary"
                           />
                         }

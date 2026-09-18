@@ -2,6 +2,7 @@ import { loadEnvConfig } from "@next/env";
 
 loadEnvConfig(process.cwd());
 
+import { blogPosts } from "@/lib/data/blog-data";
 import {
   contactLinks,
   contactNote,
@@ -15,6 +16,7 @@ import {
 
 import { createDbClient } from "./client";
 import {
+  blogPostsTable,
   contactLinksTable,
   experienceTable,
   navLinksTable,
@@ -23,6 +25,18 @@ import {
   stackLayersTable,
   statusItemsTable,
 } from "./schema";
+
+/**
+ * The static blog posts only carry a display string ("Sep 16"), not a
+ * real date — this fills in the `published_at` timestamp each one seeds
+ * with, keyed by slug.
+ */
+const blogPublishedAt: Record<string, string> = {
+  "queues-outlive-the-request": "2026-09-16",
+  "connection-pooling-diagrammed": "2026-09-12",
+  "marketplace-race-conditions": "2026-09-08",
+  "ci-cd-without-the-yaml-maze": "2026-09-02",
+};
 
 /**
  * One-time/idempotent seed: copies the static content from
@@ -139,6 +153,32 @@ async function seed(): Promise<void> {
       console.log(`Seeded contact_links (${contactLinks.length} rows)`);
     } else {
       console.log("Skipped contact_links (already has rows)");
+    }
+
+    const existingBlogPosts = await db
+      .select({ id: blogPostsTable.id })
+      .from(blogPostsTable)
+      .limit(1);
+    if (existingBlogPosts.length === 0) {
+      await db.insert(blogPostsTable).values(
+        blogPosts.map((post) => ({
+          slug: post.slug,
+          badge: post.badge ?? null,
+          authorName: post.author.name,
+          authorRole: post.author.role ?? null,
+          publishedAt: new Date(blogPublishedAt[post.slug] ?? Date.now()),
+          title: post.title,
+          tags: post.tags,
+          summary: post.summary ?? null,
+          body: (post.body ?? []).join("\n\n"),
+          reactions: post.reactions,
+          views: post.views,
+          readTime: post.readTime,
+        }))
+      );
+      console.log(`Seeded blog_posts (${blogPosts.length} rows)`);
+    } else {
+      console.log("Skipped blog_posts (already has rows)");
     }
   } finally {
     await client.end();

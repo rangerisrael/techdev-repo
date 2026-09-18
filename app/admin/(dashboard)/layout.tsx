@@ -15,6 +15,7 @@ const sections = [
   { href: "/admin/stack-layers", label: "Stack layers" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/experience", label: "Experience" },
+  { href: "/admin/blog", label: "Blog" },
   { href: "/admin/contact-links", label: "Contact links" },
   { href: "/admin/messages", label: "Messages" },
 ];

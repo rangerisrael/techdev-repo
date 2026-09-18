@@ -1,5 +1,6 @@
 import "server-only";
 
+import { blogPosts } from "@/lib/data/blog-data";
 import {
   contactLinks,
   contactNote,
@@ -11,6 +12,7 @@ import {
   statusItems,
 } from "@/lib/data/portfolio-data";
 import type {
+  BlogPost,
   ContactLink,
   ExperienceItem,
   NavLink,
@@ -143,6 +145,27 @@ export class FallbackPortfolioRepository implements PortfolioRepository {
       (repo) => repo.getContactLinks(),
       contactLinks
     );
+  }
+
+  getBlogPosts(): Promise<BlogPost[]> {
+    return this.withFallback(
+      "blog posts",
+      (repo) => repo.getBlogPosts(),
+      blogPosts
+    );
+  }
+
+  async getBlogPost(slug: string): Promise<BlogPost | null> {
+    const repo = this.getPrimary();
+    if (repo) {
+      try {
+        const post = await repo.getBlogPost(slug);
+        if (post) return post;
+      } catch (error) {
+        warn(`query failed for blog post "${slug}", using static fallback`, error);
+      }
+    }
+    return blogPosts.find((post) => post.slug === slug) ?? null;
   }
 }
 

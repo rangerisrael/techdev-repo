@@ -6,3 +6,5 @@ export * from "./projects";
 export * from "./experience";
 export * from "./contact-links";
 export * from "./contact-messages";
+export * from "./blog-posts";
+export * from "./blog-comments";

@@ -1,4 +1,5 @@
 import type {
+  BlogPost,
   ContactLink,
   ExperienceItem,
   NavLink,
@@ -25,4 +26,6 @@ export interface PortfolioRepository {
   getProjects(): Promise<Project[]>;
   getExperience(): Promise<ExperienceItem[]>;
   getContactLinks(): Promise<ContactLink[]>;
+  getBlogPosts(): Promise<BlogPost[]>;
+  getBlogPost(slug: string): Promise<BlogPost | null>;
 }

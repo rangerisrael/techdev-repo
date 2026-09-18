@@ -1,8 +1,10 @@
 import "server-only";
 
-import { asc } from "drizzle-orm";
+import { asc, count, desc, eq, inArray } from "drizzle-orm";
 
+import { formatPostDate, splitParagraphs } from "@/lib/blog/content";
 import type {
+  BlogPost,
   ContactLink,
   ExperienceItem,
   NavLink,
@@ -14,6 +16,9 @@ import type {
 
 import { type Database, getDb } from "../client";
 import {
+  type BlogPostRow,
+  blogCommentsTable,
+  blogPostsTable,
   contactLinksTable,
   experienceTable,
   navLinksTable,
@@ -23,6 +28,25 @@ import {
   statusItemsTable,
 } from "../schema";
 import type { PortfolioRepository } from "./portfolio-repository";
+
+function toBlogPost(row: BlogPostRow, commentCount: number): BlogPost {
+  return {
+    id: row.id,
+    slug: row.slug,
+    badge: row.badge ?? undefined,
+    author: { name: row.authorName, role: row.authorRole ?? undefined },
+    date: formatPostDate(row.publishedAt),
+    title: row.title,
+    tags: row.tags,
+    reactions: row.reactions,
+    comments: commentCount,
+    views: row.views,
+    readTime: row.readTime,
+    summary: row.summary ?? undefined,
+    coverImageUrl: row.coverImageUrl ?? undefined,
+    body: splitParagraphs(row.body),
+  };
+}
 
 /**
  * Concrete, swappable implementation of `PortfolioRepository` (Open/Closed
@@ -140,5 +164,39 @@ export class DrizzlePortfolioRepository implements PortfolioRepository {
       .orderBy(asc(contactLinksTable.position));
 
     return rows.map((row) => ({ label: row.label, href: row.href }));
+  }
+
+  async getBlogPosts(): Promise<BlogPost[]> {
+    const rows = await this.db
+      .select()
+      .from(blogPostsTable)
+      .orderBy(desc(blogPostsTable.publishedAt));
+
+    if (rows.length === 0) return [];
+
+    const counts = await this.db
+      .select({ blogPostId: blogCommentsTable.blogPostId, count: count() })
+      .from(blogCommentsTable)
+      .where(inArray(blogCommentsTable.blogPostId, rows.map((row) => row.id)))
+      .groupBy(blogCommentsTable.blogPostId);
+    const countByPostId = new Map(counts.map((c) => [c.blogPostId, c.count]));
+
+    return rows.map((row) => toBlogPost(row, countByPostId.get(row.id) ?? 0));
+  }
+
+  async getBlogPost(slug: string): Promise<BlogPost | null> {
+    const [row] = await this.db
+      .select()
+      .from(blogPostsTable)
+      .where(eq(blogPostsTable.slug, slug))
+      .limit(1);
+    if (!row) return null;
+
+    const [commentRow] = await this.db
+      .select({ count: count() })
+      .from(blogCommentsTable)
+      .where(eq(blogCommentsTable.blogPostId, row.id));
+
+    return toBlogPost(row, commentRow?.count ?? 0);
   }
 }
