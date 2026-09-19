@@ -64,6 +64,15 @@ export class DrizzlePortfolioAdminRepository
       .orderBy(asc(navLinksTable.position));
   }
 
+  async getNavLink(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(navLinksTable)
+      .where(eq(navLinksTable.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
   async createNavLink(input: NavLinkInput) {
     const [row] = await this.db
       .insert(navLinksTable)
@@ -88,6 +97,15 @@ export class DrizzlePortfolioAdminRepository
       .select()
       .from(statusItemsTable)
       .orderBy(asc(statusItemsTable.position));
+  }
+
+  async getStatusItem(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(statusItemsTable)
+      .where(eq(statusItemsTable.id, id))
+      .limit(1);
+    return row ?? null;
   }
 
   async createStatusItem(input: StatusItemInput) {
@@ -116,6 +134,15 @@ export class DrizzlePortfolioAdminRepository
       .orderBy(asc(stackLayersTable.position));
   }
 
+  async getStackLayer(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(stackLayersTable)
+      .where(eq(stackLayersTable.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
   async createStackLayer(input: StackLayerInput) {
     const [row] = await this.db
       .insert(stackLayersTable)
@@ -140,6 +167,15 @@ export class DrizzlePortfolioAdminRepository
       .select()
       .from(projectsTable)
       .orderBy(asc(projectsTable.position));
+  }
+
+  async getProject(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(projectsTable)
+      .where(eq(projectsTable.id, id))
+      .limit(1);
+    return row ?? null;
   }
 
   async createProject(input: ProjectInput) {
@@ -168,6 +204,15 @@ export class DrizzlePortfolioAdminRepository
       .orderBy(asc(experienceTable.position));
   }
 
+  async getExperience(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(experienceTable)
+      .where(eq(experienceTable.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
   async createExperience(input: ExperienceInput) {
     const [row] = await this.db
       .insert(experienceTable)
@@ -192,6 +237,15 @@ export class DrizzlePortfolioAdminRepository
       .select()
       .from(contactLinksTable)
       .orderBy(asc(contactLinksTable.position));
+  }
+
+  async getContactLink(id: number) {
+    const [row] = await this.db
+      .select()
+      .from(contactLinksTable)
+      .where(eq(contactLinksTable.id, id))
+      .limit(1);
+    return row ?? null;
   }
 
   async createContactLink(input: ContactLinkInput) {

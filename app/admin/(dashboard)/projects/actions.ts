@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
@@ -32,11 +33,12 @@ export async function createProject(formData: FormData): Promise<void> {
     title: formString(formData, "title"),
     description: formString(formData, "description"),
     tags: formTags(formData),
-    position: existing.length,
+    position: formPosition(formData, existing.length),
   });
 
   revalidatePath("/admin/projects");
   revalidatePath("/");
+  redirect("/admin/projects");
 }
 
 export async function updateProject(formData: FormData): Promise<void> {
@@ -54,6 +56,7 @@ export async function updateProject(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/projects");
   revalidatePath("/");
+  redirect("/admin/projects");
 }
 
 export async function deleteProject(formData: FormData): Promise<void> {
@@ -64,4 +67,5 @@ export async function deleteProject(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/projects");
   revalidatePath("/");
+  redirect("/admin/projects");
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
@@ -31,11 +32,12 @@ export async function createStackLayer(formData: FormData): Promise<void> {
     title: formString(formData, "title"),
     tags: formTags(formData),
     wide: formData.get("wide") === "on",
-    position: existing.length,
+    position: formPosition(formData, existing.length),
   });
 
   revalidatePath("/admin/stack-layers");
   revalidatePath("/");
+  redirect("/admin/stack-layers");
 }
 
 export async function updateStackLayer(formData: FormData): Promise<void> {
@@ -52,6 +54,7 @@ export async function updateStackLayer(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/stack-layers");
   revalidatePath("/");
+  redirect("/admin/stack-layers");
 }
 
 export async function deleteStackLayer(formData: FormData): Promise<void> {
@@ -62,4 +65,5 @@ export async function deleteStackLayer(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/stack-layers");
   revalidatePath("/");
+  redirect("/admin/stack-layers");
 }

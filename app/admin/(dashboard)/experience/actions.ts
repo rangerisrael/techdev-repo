@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
@@ -23,11 +24,12 @@ export async function createExperience(formData: FormData): Promise<void> {
     date: formString(formData, "date"),
     role: formString(formData, "role"),
     description: formString(formData, "description"),
-    position: existing.length,
+    position: formPosition(formData, existing.length),
   });
 
   revalidatePath("/admin/experience");
   revalidatePath("/");
+  redirect("/admin/experience");
 }
 
 export async function updateExperience(formData: FormData): Promise<void> {
@@ -43,6 +45,7 @@ export async function updateExperience(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/experience");
   revalidatePath("/");
+  redirect("/admin/experience");
 }
 
 export async function deleteExperience(formData: FormData): Promise<void> {
@@ -53,4 +56,5 @@ export async function deleteExperience(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/experience");
   revalidatePath("/");
+  redirect("/admin/experience");
 }

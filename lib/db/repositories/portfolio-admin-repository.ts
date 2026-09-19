@@ -43,31 +43,37 @@ export interface PortfolioAdminRepository {
   upsertSiteConfig(input: SiteConfigInput): Promise<void>;
 
   listNavLinks(): Promise<NavLinkRow[]>;
+  getNavLink(id: number): Promise<NavLinkRow | null>;
   createNavLink(input: NavLinkInput): Promise<NavLinkRow>;
   updateNavLink(id: number, input: NavLinkInput): Promise<void>;
   deleteNavLink(id: number): Promise<void>;
 
   listStatusItems(): Promise<StatusItemRow[]>;
+  getStatusItem(id: number): Promise<StatusItemRow | null>;
   createStatusItem(input: StatusItemInput): Promise<StatusItemRow>;
   updateStatusItem(id: number, input: StatusItemInput): Promise<void>;
   deleteStatusItem(id: number): Promise<void>;
 
   listStackLayers(): Promise<StackLayerRow[]>;
+  getStackLayer(id: number): Promise<StackLayerRow | null>;
   createStackLayer(input: StackLayerInput): Promise<StackLayerRow>;
   updateStackLayer(id: number, input: StackLayerInput): Promise<void>;
   deleteStackLayer(id: number): Promise<void>;
 
   listProjects(): Promise<ProjectRow[]>;
+  getProject(id: number): Promise<ProjectRow | null>;
   createProject(input: ProjectInput): Promise<ProjectRow>;
   updateProject(id: number, input: ProjectInput): Promise<void>;
   deleteProject(id: number): Promise<void>;
 
   listExperience(): Promise<ExperienceRow[]>;
+  getExperience(id: number): Promise<ExperienceRow | null>;
   createExperience(input: ExperienceInput): Promise<ExperienceRow>;
   updateExperience(id: number, input: ExperienceInput): Promise<void>;
   deleteExperience(id: number): Promise<void>;
 
   listContactLinks(): Promise<ContactLinkRow[]>;
+  getContactLink(id: number): Promise<ContactLinkRow | null>;
   createContactLink(input: ContactLinkInput): Promise<ContactLinkRow>;
   updateContactLink(id: number, input: ContactLinkInput): Promise<void>;
   deleteContactLink(id: number): Promise<void>;

@@ -68,7 +68,7 @@ export class FallbackPortfolioRepository implements PortfolioRepository {
     if (!repo) return fallback;
 
     try {
-      const result = await read(repo);
+      const result = await readWithRetry(() => read(repo));
       // An unmigrated/unseeded list table returns `[]` rather than
       // throwing, which would otherwise render as an empty section instead
       // of falling back — treat it the same as a failed query.
@@ -159,7 +159,7 @@ export class FallbackPortfolioRepository implements PortfolioRepository {
     const repo = this.getPrimary();
     if (repo) {
       try {
-        const post = await repo.getBlogPost(slug);
+        const post = await readWithRetry(() => repo.getBlogPost(slug));
         if (post) return post;
       } catch (error) {
         warn(`query failed for blog post "${slug}", using static fallback`, error);
@@ -169,9 +169,58 @@ export class FallbackPortfolioRepository implements PortfolioRepository {
   }
 }
 
+const RETRY_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 100;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * A single connection blip (pool briefly exhausted, transient network hiccup)
+ * shouldn't be indistinguishable from "the database is actually down" — the
+ * former recovers on the very next attempt, but `withFallback` can't tell
+ * them apart from one failed call. That distinction matters most on
+ * statically-rendered pages (the homepage, `/blog`): when an admin write
+ * triggers `revalidatePath`, whatever this returns during that one
+ * regeneration gets baked into the page cache until the next revalidation.
+ * A retry here is what keeps a passing transient error from freezing the
+ * static page on fallback content indefinitely.
+ */
+async function readWithRetry<T>(read: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+    try {
+      return await read();
+    } catch (error) {
+      lastError = error;
+      if (attempt < RETRY_ATTEMPTS) {
+        await delay(RETRY_DELAY_MS * attempt);
+      }
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * `error.message` alone hides exactly the detail that distinguishes "DB
+ * briefly unreachable" (timeout, connection refused, pool exhausted) from
+ * "query is actually broken" (syntax/schema error) — the two cases this
+ * fallback conflates into the same static-content response. postgres.js
+ * surfaces that detail as `code`/`errno` (network errors) or a Postgres
+ * error code (query errors), neither of which is on `Error.message`.
+ */
 function warn(message: string, error: unknown): void {
-  console.warn(
-    `[portfolio-repository] ${message}:`,
-    error instanceof Error ? error.message : error
-  );
+  const detail =
+    error instanceof Error
+      ? [
+          error.message,
+          "code" in error ? `code=${(error as { code?: unknown }).code}` : null,
+          "errno" in error ? `errno=${(error as { errno?: unknown }).errno}` : null,
+        ]
+          .filter(Boolean)
+          .join(" | ")
+      : String(error);
+
+  console.warn(`[portfolio-repository] ${message}: ${detail}`);
 }

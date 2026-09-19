@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
@@ -22,11 +23,12 @@ export async function createStatusItem(formData: FormData): Promise<void> {
   await repo.createStatusItem({
     label: formString(formData, "label"),
     value: formString(formData, "value"),
-    position: existing.length,
+    position: formPosition(formData, existing.length),
   });
 
   revalidatePath("/admin/status-items");
   revalidatePath("/");
+  redirect("/admin/status-items");
 }
 
 export async function updateStatusItem(formData: FormData): Promise<void> {
@@ -41,6 +43,7 @@ export async function updateStatusItem(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/status-items");
   revalidatePath("/");
+  redirect("/admin/status-items");
 }
 
 export async function deleteStatusItem(formData: FormData): Promise<void> {
@@ -51,4 +54,5 @@ export async function deleteStatusItem(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/status-items");
   revalidatePath("/");
+  redirect("/admin/status-items");
 }

@@ -1,120 +1,96 @@
+import Link from "next/link";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
-import { SubmitButton } from "@/components/admin/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
 
-import {
-  createExperience,
-  deleteExperience,
-  updateExperience,
-} from "./actions";
+import { deleteExperience } from "./actions";
 
 export default async function ExperiencePage() {
   const rows = await getPortfolioAdminRepository().listExperience();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold text-foreground">Experience</h1>
-        <p className="text-sm text-muted-foreground">
-          Career timeline entries.
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        {rows.map((row) => (
-          <form
-            key={row.id}
-            action={updateExperience}
-            className="space-y-2 rounded-lg border border-border bg-card p-3"
-          >
-            <input type="hidden" name="id" value={row.id} />
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <div className="space-y-1">
-                <Label htmlFor={`date-${row.id}`}>Date</Label>
-                <Input
-                  id={`date-${row.id}`}
-                  name="date"
-                  defaultValue={row.date}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor={`role-${row.id}`}>Role</Label>
-                <Input
-                  id={`role-${row.id}`}
-                  name="role"
-                  defaultValue={row.role}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor={`position-${row.id}`}>Order</Label>
-                <Input
-                  id={`position-${row.id}`}
-                  name="position"
-                  type="number"
-                  defaultValue={row.position}
-                />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor={`description-${row.id}`}>Description</Label>
-              <Textarea
-                id={`description-${row.id}`}
-                name="description"
-                defaultValue={row.description}
-                required
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-1.5">
-              <SubmitButton size="sm" pendingLabel="Saving…">
-                Save
-              </SubmitButton>
-              <ConfirmSubmitButton
-                type="submit"
-                formAction={deleteExperience}
-                variant="destructive"
-                size="sm"
-                confirmMessage={`Delete the "${row.role}" experience entry?`}
-              >
-                Delete
-              </ConfirmSubmitButton>
-            </div>
-          </form>
-        ))}
-        {rows.length === 0 ? (
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-semibold text-foreground">Experience</h1>
           <p className="text-sm text-muted-foreground">
-            No experience entries yet.
+            Career timeline entries.
           </p>
-        ) : null}
+        </div>
+        <Button nativeButton={false} render={<Link href="/admin/experience/new" />}>
+          Add entry
+        </Button>
       </div>
 
-      <form
-        action={createExperience}
-        className="space-y-2 rounded-lg border border-dashed border-border p-3"
-      >
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1">
-            <Label htmlFor="new-date">Date</Label>
-            <Input id="new-date" name="date" placeholder="2024 — Present" required />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="new-role">Role</Label>
-            <Input id="new-role" name="role" placeholder="Role, Company" required />
-          </div>
+      {rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No experience entries yet.</p>
+      ) : (
+        <div className="rounded-lg border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Role</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Order</TableHead>
+                <TableHead className="w-0" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="max-w-xs">
+                    <Link
+                      href={`/admin/experience/${row.id}/edit`}
+                      className="font-medium text-foreground hover:text-primary hover:underline"
+                    >
+                      {row.role}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{row.date}</TableCell>
+                  <TableCell className="max-w-sm truncate text-muted-foreground">
+                    {row.description}
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {row.position}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        nativeButton={false}
+                        render={<Link href={`/admin/experience/${row.id}/edit`} />}
+                      >
+                        Edit
+                      </Button>
+                      <form action={deleteExperience}>
+                        <input type="hidden" name="id" value={row.id} />
+                        <ConfirmSubmitButton
+                          type="submit"
+                          variant="destructive"
+                          size="sm"
+                          confirmMessage={`Delete the "${row.role}" experience entry?`}
+                        >
+                          Delete
+                        </ConfirmSubmitButton>
+                      </form>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
-        <div className="space-y-1">
-          <Label htmlFor="new-description">Description</Label>
-          <Textarea id="new-description" name="description" required rows={3} />
-        </div>
-        <SubmitButton size="sm" pendingLabel="Adding…">
-          Add
-        </SubmitButton>
-      </form>
+      )}
     </div>
   );
 }

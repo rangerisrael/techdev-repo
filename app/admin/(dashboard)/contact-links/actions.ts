@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/lib/auth/dal";
 import { getPortfolioAdminRepository } from "@/lib/db/repositories";
@@ -22,11 +23,12 @@ export async function createContactLink(formData: FormData): Promise<void> {
   await repo.createContactLink({
     label: formString(formData, "label"),
     href: formString(formData, "href"),
-    position: existing.length,
+    position: formPosition(formData, existing.length),
   });
 
   revalidatePath("/admin/contact-links");
   revalidatePath("/");
+  redirect("/admin/contact-links");
 }
 
 export async function updateContactLink(formData: FormData): Promise<void> {
@@ -41,6 +43,7 @@ export async function updateContactLink(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/contact-links");
   revalidatePath("/");
+  redirect("/admin/contact-links");
 }
 
 export async function deleteContactLink(formData: FormData): Promise<void> {
@@ -51,4 +54,5 @@ export async function deleteContactLink(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/contact-links");
   revalidatePath("/");
+  redirect("/admin/contact-links");
 }
